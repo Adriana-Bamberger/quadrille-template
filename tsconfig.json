@@ -1,0 +1,11 @@
+{
+	"extends": "$app/tsconfig",
+	"compilerOptions": {
+		"strict": true,
+		// Mirrors the "#lib/*" subpath import in package.json. Vite resolves the
+		// runtime side from there; this teaches tsc the same mapping so imports can
+		// stay extensionless.
+		"paths": { "#lib/*": ["./src/lib/*"] }
+	},
+	"include": ["src", "vite.config.ts"]
+}

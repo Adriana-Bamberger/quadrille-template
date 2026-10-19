@@ -1,0 +1,113 @@
+@import 'tailwindcss';
+
+/*
+	Design tokens, lifted from the original css/demo.css. Tailwind v4 emits these
+	as real custom properties, so scoped component CSS can read them directly and
+	no hex code is written twice.
+
+	Note these become utility names too: --color-ink gives `text-ink`, `bg-ink`.
+*/
+@theme {
+	--color-ink: #141715;
+	--color-slate-deep: #323f5c;
+	--color-slate-mid: #4d5871;
+	--color-lilac: #d4d2e0;
+	/* Darkened from the original #ce4555, which was 3.06:1 on the page ground. */
+	--color-accent: #a32734;
+	--color-night: #1c222f;
+	/* Lightened from #777792, which was 3.67:1 on --color-night. */
+	--color-dusk: #9a9ab4;
+	/* Links on the dark bands; --color-slate-deep is 1.5:1 there. */
+	--color-link-dark: #aec3e6;
+
+	--font-sans: 'Avenir Next', Avenir, 'Helvetica Neue', Helvetica, Arial, sans-serif;
+	--font-display: 'Playfair Display', serif;
+
+	/*
+		The original had exactly one breakpoint, `max-width: 50em`. Registering it
+		here gives the whole site the `max-compact:` variant and keeps that single
+		decision in one place.
+	*/
+	--breakpoint-compact: 50em;
+}
+
+/*
+	Element defaults, lifted from the original css/demo.css.
+
+	These MUST sit inside `@layer base`. Tailwind v4 emits its utilities into a
+	cascade layer, and an unlayered rule beats every layered one regardless of
+	specificity — so a bare `a { color: … }` here would silently defeat every
+	`text-*` utility in the app. Everything else is scoped to its own component.
+*/
+@layer base {
+	html {
+		/* The rotated stages overhang the viewport by design. */
+		overflow-x: hidden;
+	}
+
+	body {
+		/*
+			Tailwind's preflight sets `line-height: 1.5` on <html>. The original
+			inherited the browser default, and several blocks were laid out around
+			the tighter metrics that gives. Restoring it keeps the port faithful.
+
+			For new content, reach for Tailwind's `leading-*` utilities rather than
+			changing this — flipping it shifts every existing block.
+		*/
+		line-height: normal;
+		font-family: var(--font-sans);
+		color: var(--color-ink);
+		background: var(--color-lilac);
+		-webkit-font-smoothing: antialiased;
+		-moz-osx-font-smoothing: grayscale;
+	}
+
+	a {
+		color: var(--color-slate-deep);
+		text-decoration: none;
+	}
+
+	a:hover {
+		color: var(--color-slate-mid);
+	}
+
+	/*
+		The original set `outline: none` on every link, which fails WCAG 2.4.7 —
+		keyboard users had no idea where they were. Focus is drawn explicitly
+		instead, with a light outer ring so the marker survives on both the pale
+		page ground and the dark bands.
+	*/
+	:where(a, button, [tabindex]):focus-visible {
+		outline: 3px solid var(--color-accent);
+		outline-offset: 3px;
+		border-radius: 2px;
+		box-shadow: 0 0 0 6px rgba(255, 255, 255, 0.85);
+	}
+
+	/*
+		Created by scrollDrive to give the fixed stage something to scroll against.
+		It must never intercept pointer events from the grid behind it.
+	*/
+	.pseudo-scroller {
+		pointer-events: none;
+	}
+}
+
+/*
+	Respect a reduced-motion preference.
+
+	The grids are built from 3D transforms and the page is one long reveal, so
+	this removes the motion rather than the layout: tiles appear instead of
+	flying up, stacks snap instead of fanning, and the loading spinner stops
+	spinning. The site remains fully usable.
+*/
+@media (prefers-reduced-motion: reduce) {
+	*,
+	*::before,
+	*::after {
+		animation-duration: 0.01ms !important;
+		animation-iteration-count: 1 !important;
+		transition-duration: 0.01ms !important;
+		scroll-behavior: auto !important;
+	}
+}
